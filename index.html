@@ -117,23 +117,35 @@ function MarvelCharacters() {
   const [userList, setUserList] = useState([]);
 
   const filteredCharacters = useMemo(() => {
-    return characters.filter(character =>
+    const combinedList = [...characters, ...userList];
+    return combinedList.filter(character =>
       character.name.toLowerCase().includes(search.toLowerCase()) || character.description.toLowerCase().includes(search.toLowerCase())
     );
-  }, [search]);
+  }, [search, userList]);
+
 
   const addCharacter = (name, description) => {
-    const newCharacter = {
-      id: userList.length + 1,
-      name,
-      description,
-    };
-    setUserList([...userList, newCharacter]);
+  
+    const isCharacterExist = [...characters, ...userList].some(character => 
+      character.name === name && character.description === description
+    );
+    
+    if (!isCharacterExist) {
+      const newCharacter = {
+        id: userList.length + characters.length + 1, 
+        name,
+        description,
+      };
+      setUserList([...userList, newCharacter]);
+    } else {
+      alert('Este personaje ya ha sido agregado.');
+    }
   };
 
   return (
     <div className="app-container">
-      <h1>Marvel useMemo</h1>
+      <h1>Marvel Characters Search</h1>
+
 
       <input
         type="text"
@@ -142,14 +154,16 @@ function MarvelCharacters() {
         onChange={(e) => setSearch(e.target.value)}
       />
 
+   
       <div>
         <button onClick={() => addCharacter('Es beta aún xd', 'No dio tiempo de terminar esto')}>
           Agregar personaje
         </button>
       </div>
 
+    
       <ul className="character-list">
-        {filteredCharacters.concat(userList).map((character) => (
+        {filteredCharacters.map((character) => (
           <li key={character.id} className="character-item">
             <div>
               <strong>{character.name}</strong>
