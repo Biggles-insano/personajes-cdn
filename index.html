@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Marvel Characters Search</title>
+    <title>Marvel useMemo</title>
     <script src="https://cdn.jsdelivr.net/npm/react@17.0.2/umd/react.production.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/react-dom@17.0.2/umd/react-dom.production.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/babel-standalone@6.26.0/babel.min.js"></script>
@@ -31,19 +31,18 @@
             margin-bottom: 20px;
         }
 
-        input {
+        input, textarea {
             padding: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             width: 80%;
             max-width: 400px; 
             font-size: 1rem;
             border: 1px solid #ccc;
             border-radius: 4px;
-            margin-top: 20px;
             background-color: #fff;
         }
 
-        input:focus {
+        input:focus, textarea:focus {
             outline: none;
             border-color: #ffcc00;
         }
@@ -115,6 +114,9 @@ function MarvelCharacters() {
 
   const [search, setSearch] = useState('');
   const [userList, setUserList] = useState([]);
+  
+  const [newName, setNewName] = useState('');
+  const [newDescription, setNewDescription] = useState('');
 
   const filteredCharacters = useMemo(() => {
     const combinedList = [...characters, ...userList];
@@ -123,29 +125,28 @@ function MarvelCharacters() {
     );
   }, [search, userList]);
 
-
-  const addCharacter = (name, description) => {
-  
+  const addCharacter = () => {
     const isCharacterExist = [...characters, ...userList].some(character => 
-      character.name === name && character.description === description
+      character.name === newName && character.description === newDescription
     );
     
-    if (!isCharacterExist) {
+    if (!isCharacterExist && newName && newDescription) {
       const newCharacter = {
         id: userList.length + characters.length + 1, 
-        name,
-        description,
+        name: newName,
+        description: newDescription,
       };
       setUserList([...userList, newCharacter]);
+      setNewName(''); 
+      setNewDescription(''); 
     } else {
-      alert('Este personaje ya ha sido agregado.');
+      alert('Este personaje ya ha sido agregado o falta información.');
     }
   };
 
   return (
     <div className="app-container">
-      <h1>Marvel Characters Search</h1>
-
+      <h1>Marvel useMemo</h1>
 
       <input
         type="text"
@@ -154,14 +155,28 @@ function MarvelCharacters() {
         onChange={(e) => setSearch(e.target.value)}
       />
 
-   
       <div>
-        <button onClick={() => addCharacter('Es beta aún xd', 'No dio tiempo de terminar esto')}>
-          Agregar personaje
-        </button>
+        <input
+          type="text"
+          placeholder="Nombre del personaje"
+          value={newName}
+          onChange={(e) => setNewName(e.target.value)}
+        />
+      </div>
+      <div>
+        <textarea
+          placeholder="Descripción del personaje"
+          value={newDescription}
+          onChange={(e) => setNewDescription(e.target.value)}
+        />
       </div>
 
-    
+  
+      <div>
+        <button onClick={addCharacter}>Agregar personaje</button>
+      </div>
+
+
       <ul className="character-list">
         {filteredCharacters.map((character) => (
           <li key={character.id} className="character-item">
